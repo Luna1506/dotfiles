@@ -12,34 +12,19 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nvim = {
-      url = "github:Gako358/neovim?ref=main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+#    nvim = {
+#      url = "github:Gako358/neovim?ref=main";
+#      inputs.nixpkgs.follows = "nixpkgs";
+#    };
   };
 
   outputs = { self, nixpkgs, home-manager, nvim, ... }@inputs: {
     nixosConfigurations = {
       nixos = let
         system = "x86_64-linux";
-
-        # Importiere nixpkgs mit Overlay
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            # Overlay nur für nvim-treesitter, Org-Grammatik
-            (self: super: {
-              vimPlugins = super.vimPlugins // {
-                nvim-treesitter = super.vimPlugins.nvim-treesitter.override {
-                  grammars = ["org"];
-                };
-              };
-            })
-          ];
-        };
       in nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs pkgs; };  # pkgs verfügbar machen
+        specialArgs = { inherit inputs; };
         modules = [
           ./hosts/laptop/default.nix
 
@@ -48,7 +33,7 @@
           {
             home-manager.useUserPackages = true;
             home-manager.users.luna = import ./home/luna/home.nix;
-            home-manager.extraSpecialArgs = { inherit inputs pkgs; };
+            home-manager.extraSpecialArgs = { inherit inputs };
             home-manager.backupFileExtension = "backup";
           }
         ];
