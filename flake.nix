@@ -18,7 +18,7 @@
 #    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nvim, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     nixosConfigurations = {
       nixos = let
         system = "x86_64-linux";
