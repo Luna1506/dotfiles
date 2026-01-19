@@ -7,12 +7,6 @@
 
   programs.home-manager.enable = true;
 
-#  programs.gpg.enable = true;
-#  services.gpg-agent = {
-#    enable = true;
-#    pinentryPackage = pkgs.pinentry-curses;
-#  };
-
   # Alternativ: Module direkt einbinden
   imports = [
     ./modules/hyprland.nix
@@ -21,6 +15,10 @@
     ./modules/yazi.nix
     ./modules/cursor.nix
     ./modules/hyprpaper.nix
+    ./modules/theme.nix
+    ./modules/wofi.nix
+    ./modules/ghostty.nix
+    ./modules/neovim.nix
   ];
 }
 
