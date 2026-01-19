@@ -33,7 +33,7 @@
           {
             home-manager.useUserPackages = true;
             home-manager.users.luna = import ./home/luna/home.nix;
-            home-manager.extraSpecialArgs = { inherit inputs };
+            home-manager.extraSpecialArgs = { inherit inputs; };
             home-manager.backupFileExtension = "backup";
           }
         ];
