@@ -18,22 +18,37 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nvim, ... }@inputs: {
     nixosConfigurations = {
       nixos = let
         system = "x86_64-linux";
+
+        # Importiere nixpkgs mit Overlay
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [
+            # Overlay nur für nvim-treesitter, Org-Grammatik
+            (self: super: {
+              vimPlugins = super.vimPlugins // {
+                nvim-treesitter = super.vimPlugins.nvim-treesitter.override {
+                  grammars = ["org"];
+                };
+              };
+            })
+          ];
+        };
       in nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs; };  # damit modules auf 'inputs' zugreifen können
+        specialArgs = { inherit inputs; pkgs; };  # pkgs verfügbar machen
         modules = [
           ./hosts/laptop/default.nix
 
-          # Home Manager als NixOS-Modul (optional & empfohlen)
+          # Home Manager als NixOS-Modul
           home-manager.nixosModules.home-manager
           {
             home-manager.useUserPackages = true;
             home-manager.users.luna = import ./home/luna/home.nix;
-            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.extraSpecialArgs = { inherit inputs pkgs; };
             home-manager.backupFileExtension = "backup";
           }
         ];
