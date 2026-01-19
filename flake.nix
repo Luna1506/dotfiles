@@ -39,7 +39,7 @@
         };
       in nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs; pkgs; };  # pkgs verfügbar machen
+        specialArgs = { inherit inputs pkgs; };  # pkgs verfügbar machen
         modules = [
           ./hosts/laptop/default.nix
 
