@@ -1,6 +1,5 @@
 {
   description = "Modulares NixOS-Setup (Host: nixos) mit Home Manager-Option";
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     catppuccin.url = "github:catppuccin/nix";
@@ -12,10 +11,6 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-#    nvim = {
-#      url = "github:Gako358/neovim?ref=main";
-#      inputs.nixpkgs.follows = "nixpkgs";
-#    };
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {

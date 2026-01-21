@@ -20,9 +20,9 @@ in
       ###################
       ### MY PROGRAMS ###
       ###################
-      "$terminal"    = terminal;
+      "$terminal" = terminal;
       "$fileManager" = fileManager;
-      "$menu"        = menu;
+      "$menu" = menu;
 
       #############################
       ### ENVIRONMENT VARIABLES ###

@@ -3,7 +3,7 @@
 {
   home.username = "luna";
   home.homeDirectory = "/home/luna";
-  home.stateVersion = "23.11";  
+  home.stateVersion = "23.11";
 
   programs.home-manager.enable = true;
 
@@ -16,7 +16,7 @@
     ./modules/cursor.nix
     ./modules/hyprpaper.nix
     ./modules/theme.nix
-#    ./modules/wofi.nix
+    #    ./modules/wofi.nix
     ./modules/ghostty.nix
     ./modules/neovim.nix
   ];
