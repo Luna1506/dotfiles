@@ -10,7 +10,7 @@
     ../../modules/networking.nix
     ../../modules/locale.nix
     ../../modules/users.nix
-    ../../modules/packages.nix
+    ../../modules/aliases.nix
     ../../modules/programs.nix
     ../../modules/styling.nix
     ../../modules/desktop/hyprland.nix

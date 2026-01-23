@@ -7,6 +7,11 @@
 
   programs.home-manager.enable = true;
 
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+  }
+
   # Alternativ: Module direkt einbinden
   imports = [
     ./modules/hyprland.nix
