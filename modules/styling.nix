@@ -6,7 +6,14 @@
     theme = "catppuccin-mocha-mauve";
   };
 
-  # Weitere systemweite Styling-Dinge könnten hier hin (Fonts, Qt-Plattform, etc.)
-  # fonts.packages = with pkgs; [ ... ];
+  fonts = {
+    fontconfig.enable = true;
+
+    # Wichtig: Fonts hier rein, nicht nur systemPackages
+    packages = with pkgs; [
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.symbols-only
+    ];
+  };
 }
 

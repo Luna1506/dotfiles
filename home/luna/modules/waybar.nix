@@ -11,9 +11,7 @@
         height = 34;
         spacing = 6;
 
-        modules-left = [
-          "hyprland/workspaces"
-        ];
+        modules-left = [ "hyprland/workspaces" ];
 
         modules-right = [
           "wireplumber"
@@ -23,9 +21,6 @@
           "custom/power"
         ];
 
-        # -----------------------------
-        # Workspaces (Hyprland)
-        # -----------------------------
         "hyprland/workspaces" = {
           all-outputs = true;
           format = "{name}";
@@ -33,53 +28,38 @@
           on-scroll-down = "hyprctl dispatch workspace e-1";
         };
 
-        # -----------------------------
-        # Audio (PipeWire / WirePlumber)
-        # -----------------------------
+        # PipeWire / WirePlumber (Icons: “sicher”)
         wireplumber = {
-          format = "{icon} {volume}%";
-          format-muted = "󰖁 muted";
-          format-icons = {
-            default = [ "󰕿" "󰖀" "󰕾" ];
-          };
+          format = "  {volume}%";
+          format-muted = " muted";
           on-click = "pavucontrol";
           on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
           on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
         };
 
-        # -----------------------------
-        # Network
-        # -----------------------------
+        # Network (Icons: “sicher”)
         network = {
-          format-wifi = "󰖩 {signalStrength}%";
-          format-ethernet = "󰈀 {ipaddr}";
-          format-disconnected = "󰖪 offline";
+          format-wifi = "  {signalStrength}%";
+          format-ethernet = " {ipaddr}";
+          format-disconnected = "  offline";
           tooltip = true;
-          on-click = "nm-connection-editor";
+          on-click = "sh -lc 'command -v nm-connection-editor >/dev/null && nm-connection-editor || nmtui'";
         };
 
-        # -----------------------------
-        # Bluetooth
-        # -----------------------------
+        # Bluetooth (Icons: “sicher”)
         bluetooth = {
           format = "";
           format-off = " off";
           format-disabled = " off";
           tooltip = true;
-          on-click = "blueman-manager";
+          on-click = "sh -lc 'command -v blueman-manager >/dev/null && blueman-manager || bluetoothctl'";
         };
 
-        # -----------------------------
-        # Clock
-        # -----------------------------
         clock = {
           format = "{:%a %d.%m · %H:%M}";
           tooltip-format = "{:%A, %d. %B %Y}";
         };
 
-        # -----------------------------
-        # Power button
-        # -----------------------------
         "custom/power" = {
           format = "⏻";
           tooltip = true;
@@ -89,9 +69,6 @@
       };
     };
 
-    # -----------------------------
-    # Style (CSS)
-    # -----------------------------
     style = ''
       * {
         border: none;
@@ -99,15 +76,18 @@
         min-height: 0;
         margin: 0;
         padding: 0;
-        font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+        /* Text-Font neutral */
+        font-family: "JetBrainsMono", "Noto Sans", sans-serif;
         font-size: 12px;
       }
 
+      /* Bar selbst transparent */
       window#waybar {
-        background: rgba(10, 10, 10, 0.60);
+        background: transparent;
         color: #eaeaea;
       }
 
+      /* Module als “Pills” */
       #workspaces,
       #clock,
       #wireplumber,
@@ -118,6 +98,13 @@
         margin: 6px 4px;
         background: rgba(255, 255, 255, 0.06);
         border-radius: 10px;
+      }
+
+      /* Icons sicher über Nerd Fonts rendern */
+      #wireplumber,
+      #network,
+      #bluetooth {
+        font-family: "JetBrainsMono Nerd Font", "JetBrainsMono NF", "Symbols Nerd Font", "Noto Sans Symbols", sans-serif;
       }
 
       /* Workspaces */
@@ -153,17 +140,9 @@
         color: rgba(255, 255, 255, 0.35);
       }
 
-      /* Audio */
-      #wireplumber.muted {
-        color: rgba(255, 255, 255, 0.45);
-      }
-
-      /* Network */
-      #network.disconnected {
-        color: rgba(255, 255, 255, 0.45);
-      }
-
-      /* Bluetooth */
+      /* Muted / disconnected states */
+      #wireplumber.muted,
+      #network.disconnected,
       #bluetooth.off,
       #bluetooth.disabled {
         color: rgba(255, 255, 255, 0.45);

@@ -144,6 +144,7 @@ in
         "$mainMod, F, fullscreen"
         "$mainMod, S, exec, ~/.config/hypr/scripts/spotify-toggle.sh"
         "$mainMod, D, exec, vesktop"
+        "$mainMod, B, exec, ~/.config/hypr/scripts/waybar-toggle.sh"
         "$mainMod, left, movefocus, l"
         "$mainMod, right, movefocus, r"
         "$mainMod, up, movefocus, u"

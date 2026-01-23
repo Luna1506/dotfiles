@@ -29,6 +29,14 @@
     lazydocker
     pavucontrol
     wireplumber
+    networkmanagerapplet
+    networkmanager
+    ncurses # for nmtui stuff (usually pulled anyway)
+    blueman
+    bluez
+    wlogout
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.symbols-only
   ];
 }
 
