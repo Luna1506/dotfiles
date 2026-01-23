@@ -26,6 +26,9 @@
     git
     jetbrains.idea-ultimate
     catppuccin-sddm
+    lazydocker
+    pavucontrol
+    wireplumber
   ];
 }
 
