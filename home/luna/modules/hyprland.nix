@@ -1,5 +1,5 @@
 # home/luna/nixos/modules/hyprland.nix
-{ config, pkgs, ... }:
+{ config, pkgs, zoom, ... }:
 
 let
   terminal = "ghostty";
@@ -15,7 +15,7 @@ in
       ################
       ### MONITORS ###
       ################
-      monitor = [ ",preferred,auto,1" ];
+      monitor = [ ",preferred,auto,${zoom}" ];
 
       ###################
       ### MY PROGRAMS ###
