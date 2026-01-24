@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_DEFAULT="https://github.com/Luna1506/dotfiles/dotfiles.git"
+# =========================================================
+# HARD RESET dotfiles installer (sparse checkout: only ./dotfiles)
+# - Deletes DEST completely
+# - Clones ONLY the "dotfiles/" folder from the repo (sparse checkout)
+# - Removes .git afterwards
+# - Renames ./home/<old> -> ./home/<username>
+# - Patches flake.nix let-bindings: username, nvidiaAlternative, monitor, zoom (zoom as STRING)
+# - Patches modules/users.nix best-effort
+# - Runs first-run.sh (optional)
+# =========================================================
+
+REPO_DEFAULT="https://github.com/Luna1506/dotfiles.git"
 DEST_DEFAULT="$HOME/dotfiles"
 BRANCH_DEFAULT="main"
 
@@ -10,7 +21,7 @@ ZOOM_DEFAULT="1"   # string
 
 usage() {
   cat <<'EOF'
-Hard reset dotfiles installer.
+Hard reset dotfiles installer (sparse checkout: only ./dotfiles).
 
 Usage:
   bootstrap-dotfiles_hardreset.sh --username <name> [options]
@@ -66,16 +77,16 @@ done
 command -v git >/dev/null || die "git not installed"
 
 # If script is inside DEST, we cannot rm -rf DEST while running from it.
-SCRIPT_PATH="$(readlink -f "$0" || true)"
+SCRIPT_PATH="$(readlink -f "$0" 2>/dev/null || true)"
 DEST_ABS="$(readlink -f "$DEST" 2>/dev/null || true)"
 if [[ -n "${DEST_ABS:-}" && -n "${SCRIPT_PATH:-}" && "$SCRIPT_PATH" == "$DEST_ABS"* ]]; then
   echo "⚠ You are running this script from inside DEST ($DEST_ABS)."
-  echo "  Move/copy it outside first, e.g.:"
+  echo "  Copy it outside first, e.g.:"
   echo "    cp \"$SCRIPT_PATH\" /tmp/bootstrap.sh && bash /tmp/bootstrap.sh --username \"$USERNAME\" ..."
   exit 1
 fi
 
-echo "=== HARD RESET DOTFILES ==="
+echo "=== HARD RESET DOTFILES (sparse checkout: dotfiles/) ==="
 echo "Repo:      $REPO"
 echo "Branch:    $BRANCH"
 echo "Dest:      $DEST"
@@ -90,15 +101,22 @@ echo
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-echo "→ Cloning fresh to temp…"
-git clone --depth 1 --branch "$BRANCH" "$REPO" "$TMP/repo" >/dev/null
+echo "→ Cloning (sparse) to temp…"
+git clone --filter=blob:none --no-checkout "$REPO" "$TMP/repo" >/dev/null
+pushd "$TMP/repo" >/dev/null
+git sparse-checkout init --cone >/dev/null
+git sparse-checkout set dotfiles >/dev/null
+git checkout "$BRANCH" >/dev/null
+popd >/dev/null
+
+[[ -d "$TMP/repo/dotfiles" ]] || die "Repo does not contain a 'dotfiles/' directory (sparse checkout failed?)"
 
 echo "→ Removing destination completely…"
 rm -rf "$DEST"
 mkdir -p "$(dirname "$DEST")"
-mv "$TMP/repo" "$DEST"
+mv "$TMP/repo/dotfiles" "$DEST"
 
-echo "→ Removing .git…"
+echo "→ Removing .git (if any)…"
 rm -rf "$DEST/.git"
 
 # --- Rename home folder deterministically
@@ -135,18 +153,18 @@ if [[ -f "$FLAKE" ]]; then
     perl -0777 -i -pe "s/(\\bnvidiaAlternative\\s*=\\s*)(true|false)(\\s*;)/\$1${NVIDIA_ALT}\$3/g" "$FLAKE"
   fi
 
-  # Remove the common broken line that can appear if an earlier patch went wrong:
+  # Remove a common broken line that can appear if an earlier patch went wrong:
   perl -0777 -i -pe 's/^\s*";\s*$\n//mg' "$FLAKE"
 
   # Zoom: replace if present; otherwise insert after monitor = "...";
   ZOOM="$ZOOM" perl -0777 -i -pe '
     my $z = $ENV{ZOOM};
 
-    # 1) Replace existing zoom assignment if present
+    # Replace existing zoom assignment if present
     if (s/(\bzoom\s*=\s*")([^"]*)("\s*;)/$1.$z.$3/sg) {
       # ok
     } else {
-      # 2) Insert after monitor assignment (usually in let block)
+      # Insert after monitor assignment (usually in let block)
       s/(\bmonitor\s*=\s*"[^"]*"\s*;\s*)/$1\n          zoom = "$z";\n/s;
     }
   ' "$FLAKE"
