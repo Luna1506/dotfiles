@@ -15,7 +15,7 @@ in
       ################
       ### MONITORS ###
       ################
-      monitor = [ ",preferred,auto,auto" ];
+      monitor = [ ",preferred,auto,1" ];
 
       ###################
       ### MY PROGRAMS ###
