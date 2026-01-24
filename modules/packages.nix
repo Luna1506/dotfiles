@@ -6,6 +6,7 @@
     wofi
     # Zen Browser aus Flake-Input:
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+    firefox
     yazi
     nautilus
     steam
