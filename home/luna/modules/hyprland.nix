@@ -147,10 +147,6 @@ in
         "$mainMod, B, exec, ~/.config/hypr/scripts/waybar-toggle.sh"
         "$mainMod, L, exec, hyprlock"
         "$mainMod, Print, exec, grim -g \"$(slurp)\" - | wl-copy"
-        "$mainMod, left, movefocus, l"
-        "$mainMod, right, movefocus, r"
-        "$mainMod, up, movefocus, u"
-        "$mainMod, down, movefocus, d"
         "$mainMod, 1, workspace, 1"
         "$mainMod, 2, workspace, 2"
         "$mainMod, 3, workspace, 3"
@@ -174,6 +170,9 @@ in
         "$mainMod, S, togglespecialworkspace, magic"
         "$mainMod SHIFT, S, movetoworkspace, special:magic"
         "$mainMod, TAB, workspace, e+1"
+        "$mainMod, right, workspace, e+1"
+        "$mainMod, left, workspace, e-1"
+        "ALT, Tab, workspace, previous"
       ];
 
       bindm = [

@@ -19,7 +19,7 @@
         let
           system = "x86_64-linux";
           username = "luna";
-          nvidiaAlternative = false;
+          nvidiaAlternative = true;
         in
         nixpkgs.lib.nixosSystem {
           inherit system;

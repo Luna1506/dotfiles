@@ -11,7 +11,6 @@
   hardware.nvidia = {
     modesetting.enable = true;
 
-    # RTX 5070 Ti: laut deinem NVRM-Log brauchst du die OPEN kernel modules
     open = true;
 
     nvidiaSettings = true;
