@@ -18,13 +18,13 @@
       nixos =
         let
           system = "x86_64-linux";
+          username = "luna";
         in
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs =
             {
-              inherit inputs;
-              username = "luna";
+              inherit inputs username;
             };
           modules = [
             ./hosts/laptop/default.nix
@@ -34,7 +34,7 @@
             {
               home-manager.useUserPackages = true;
               home-manager.users.luna = import ./home/luna/home.nix;
-              home-manager.extraSpecialArgs = { inherit inputs; };
+              home-manager.extraSpecialArgs = { inherit inputs username; };
               home-manager.backupFileExtension = "backup";
             }
           ];
