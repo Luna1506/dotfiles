@@ -13,6 +13,13 @@ if [[ ! -f "$SOURCE" ]]; then
   exit 1
 fi
 
+mkdir -p "$TARGET_DIR"
+
+if [[ -f "$TARGET" ]]; then
+  echo "⚠️ Removing existing $TARGET"
+  rm -f "$TARGET"
+fi
+
 cp "$SOURCE" "$TARGET"
 
 echo "✅ Copied to $TARGET"
