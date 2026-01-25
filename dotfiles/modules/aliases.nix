@@ -20,7 +20,7 @@ in
       sudo nix-collect-garbage
     '';
 
-    setup_tim = "${homeDir}/src/nixos/dotfiles/update-setup.sh --username timp --fullname 'Tim Pagels' --nvidia-alt true --monitor 'HDMI-A-1' --zoom '1.5'";
+    setup_tim = "${homeDir}/src/nixos/dotfiles/update-setup.sh --username timp --fullname 'Tim Pagels' --nvidia-alt true --monitor 'HDMI-A-1' --zoom '1.5' --luna-path false";
   };
 }
 
