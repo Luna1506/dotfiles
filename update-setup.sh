@@ -136,7 +136,7 @@ while [[ $# -gt 0 ]]; do
     --nvidia-alt) NVIDIA_ALT="${2:-}"; shift 2;;
     --monitor) MONITOR="${2:-}"; shift 2;;
     --zoom) ZOOM="${2:-}"; shift 2;;
-    --luna-path) LUNA_PATH="true"; shift 1;;
+    --luna-path) LUNA_PATH="${2:-}"; shift 2;;
     --add-flake) parse_add_flake "${2:-}"; shift 2;;
     --no-first-run) RUN_FIRST="false"; shift 1;;
     -h|--help) usage; exit 0;;
