@@ -3,8 +3,16 @@ set -euo pipefail
 
 # =========================================================
 # HARD RESET dotfiles installer (sparse checkout: only ./dotfiles)
-# + patches flake.nix let-bindings:
-#   username, nvidiaAlternative, monitor, zoom, git-name, git-email, luna-path
+# + patches flake.nix let-bindings
+# + OPTIONAL: add arbitrary flake inputs + optional nixos module includes
+#
+# Extra flakes via:
+#   --add-flake name=<inputName>,url=<flakeUrlOrPath>[,module=<attrPath>]
+#
+# Examples:
+#   --add-flake name=aliases,url=/home/timp/src/test,module=nixosModules.default
+#   --add-flake name=hm-extra,url=github:someone/flake,module=nixosModules.myModule
+#   --add-flake name=plain,url=github:someone/flake
 # =========================================================
 
 REPO_DEFAULT="https://github.com/Luna1506/dotfiles.git"
@@ -12,11 +20,11 @@ DEST_DEFAULT="$HOME/nixos"
 BRANCH_DEFAULT="main"
 
 MONITOR_DEFAULT="eDP-1"
-ZOOM_DEFAULT="1"   # string
+ZOOM_DEFAULT="1"
 
 usage() {
   cat <<'EOF'
-Hard reset dotfiles installer (sparse checkout: only ./dotfiles).
+Hard reset dotfiles installer.
 
 Usage:
   update-setup.sh --username <name> [options]
@@ -25,16 +33,24 @@ Required:
   --username <name>
 
 Options:
-  --fullname "<Full Name>"
-  --git-name "<Name>"          Sets git-name in flake.nix (e.g. "Luna")
-  --git-email "<Email>"        Sets git-email in flake.nix (e.g. "me@mail.com")
+  --git-name "<Name>"
+  --git-email "<Email>"
   --repo <url>                 (default: https://github.com/Luna1506/dotfiles.git)
   --dest <path>                (default: ~/nixos)
   --branch <name>              (default: main)
   --nvidia-alt <true|false>
   --monitor <name>             (default: eDP-1)
-  --zoom <string>              (default: "1") e.g. "1.5"
-  --luna-path                  Sets luna-path = true in flake.nix (or inserts it if missing)
+  --zoom <string>              (default: "1")
+  --luna-path                  Sets luna-path = true
+  --add-flake "name=<n>,url=<u>[,module=<m>]"
+                               Adds an input and optionally a NixOS module entry.
+                               - name:   input name (identifier, e.g. aliases)
+                               - url:    flake URL or path
+                                        examples: github:user/repo  OR  /abs/path  OR  path:/abs/path  OR  ../rel/path
+                               - module: attr path under the input to add to nixosSystem.modules
+                                        examples: nixosModules.default
+                                                  nixosModules.catppuccin
+                               Can be specified multiple times.
   --no-first-run
   -h, --help
 EOF
@@ -43,7 +59,6 @@ EOF
 die(){ echo "Error: $*" >&2; exit 1; }
 
 USERNAME=""
-FULLNAME=""
 GIT_NAME=""
 GIT_EMAIL=""
 REPO="$REPO_DEFAULT"
@@ -55,10 +70,71 @@ ZOOM="$ZOOM_DEFAULT"
 RUN_FIRST="true"
 LUNA_PATH="false"
 
+# Arrays of "name|url|module"
+ADD_FLAKES=()
+
+normalize_flake_url() {
+  # input: raw url/path -> echoes normalized flake input url
+  local raw="$1"
+  if [[ -z "$raw" ]]; then
+    echo ""
+    return 0
+  fi
+  case "$raw" in
+    path:*|github:*|gitlab:*|git+*|flake:*)
+      echo "$raw"
+      ;;
+    /*)
+      echo "path:$raw"
+      ;;
+    *)
+      # relative path or other bare flake ref; prefer path: for relative paths
+      if [[ "$raw" == ./* || "$raw" == ../* ]]; then
+        echo "path:$raw"
+      else
+        # allow things like "github:user/repo" already handled; anything else treat as path-ish
+        echo "path:$raw"
+      fi
+      ;;
+  esac
+}
+
+parse_add_flake() {
+  local spec="$1"
+  local name="" url="" module=""
+
+  IFS=',' read -r -a parts <<< "$spec"
+  for p in "${parts[@]}"; do
+    case "$p" in
+      name=*) name="${p#name=}";;
+      url=*) url="${p#url=}";;
+      module=*) module="${p#module=}";;
+      *) die "--add-flake: unknown field '$p' (allowed: name=,url=,module=)";;
+    esac
+  done
+
+  [[ -n "$name" ]] || die "--add-flake requires name=..."
+  [[ -n "$url" ]]  || die "--add-flake requires url=..."
+
+  # Validate name is a reasonable nix attr identifier
+  if ! [[ "$name" =~ ^[a-zA-Z_][a-zA-Z0-9_-]*$ ]]; then
+    die "--add-flake name must be an identifier (got: '$name')"
+  fi
+
+  # Normalize url
+  url="$(normalize_flake_url "$url")"
+
+  # module is optional; if provided, must look like attrpath "foo.bar.baz"
+  if [[ -n "$module" ]] && ! [[ "$module" =~ ^[a-zA-Z_][a-zA-Z0-9_-]*(\.[a-zA-Z_][a-zA-Z0-9_-]*)+$ ]]; then
+    die "--add-flake module must look like 'nixosModules.default' (got: '$module')"
+  fi
+
+  ADD_FLAKES+=("${name}|${url}|${module}")
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --username) USERNAME="${2:-}"; shift 2;;
-    --fullname) FULLNAME="${2:-}"; shift 2;;
     --git-name) GIT_NAME="${2:-}"; shift 2;;
     --git-email) GIT_EMAIL="${2:-}"; shift 2;;
     --repo) REPO="${2:-}"; shift 2;;
@@ -68,6 +144,7 @@ while [[ $# -gt 0 ]]; do
     --monitor) MONITOR="${2:-}"; shift 2;;
     --zoom) ZOOM="${2:-}"; shift 2;;
     --luna-path) LUNA_PATH="true"; shift 1;;
+    --add-flake) parse_add_flake "${2:-}"; shift 2;;
     --no-first-run) RUN_FIRST="false"; shift 1;;
     -h|--help) usage; exit 0;;
     *) die "Unknown argument: $1";;
@@ -77,31 +154,43 @@ done
 [[ -n "$USERNAME" ]] || die "--username is required"
 [[ -z "$NVIDIA_ALT" || "$NVIDIA_ALT" == "true" || "$NVIDIA_ALT" == "false" ]] || die "--nvidia-alt must be true|false"
 [[ "$ZOOM" =~ ^[0-9]+([.][0-9]+)?$ ]] || die "--zoom must look like 1 or 1.5"
+
 if [[ -n "$GIT_EMAIL" ]] && ! [[ "$GIT_EMAIL" =~ ^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$ ]]; then
   die "--git-email does not look like an email address"
 fi
 
 command -v git >/dev/null || die "git not installed"
 
-# Safety: don't delete DEST while running from inside it
+# Safety check: don't delete DEST while running from inside it
 SCRIPT_PATH="$(readlink -f "$0" 2>/dev/null || true)"
 DEST_ABS="$(readlink -f "$DEST" 2>/dev/null || true)"
 if [[ -n "$DEST_ABS" && -n "$SCRIPT_PATH" && "$SCRIPT_PATH" == "$DEST_ABS"* ]]; then
-  echo "⚠ Script is inside DEST. Copy it elsewhere first."
-  exit 1
+  die "Script must not run from inside DEST"
 fi
 
-echo "=== HARD RESET DOTFILES (sparse checkout) ==="
+echo "=== HARD RESET DOTFILES ==="
 echo "Repo:      $REPO"
 echo "Branch:    $BRANCH"
 echo "Dest:      $DEST"
 echo "User:      $USERNAME"
 echo "Monitor:   $MONITOR"
-echo "Zoom:      \"$ZOOM\""
+echo "Zoom:      $ZOOM"
 [[ -n "$NVIDIA_ALT" ]] && echo "NVIDIA:    $NVIDIA_ALT"
 [[ -n "$GIT_NAME" ]] && echo "Git name:  $GIT_NAME"
 [[ -n "$GIT_EMAIL" ]] && echo "Git mail:  $GIT_EMAIL"
 echo "luna-path: $LUNA_PATH"
+
+if [[ ${#ADD_FLAKES[@]} -gt 0 ]]; then
+  echo "Extra flakes:"
+  for entry in "${ADD_FLAKES[@]}"; do
+    IFS='|' read -r n u m <<< "$entry"
+    if [[ -n "$m" ]]; then
+      echo "  - $n -> $u (module: $m)"
+    else
+      echo "  - $n -> $u"
+    fi
+  done
+fi
 echo
 
 TMP="$(mktemp -d)"
@@ -120,11 +209,13 @@ popd >/dev/null
 [[ -d "$TMP/repo/dotfiles" ]] || die "Repo has no dotfiles/ directory"
 
 # ---------------------------------------------------------
-# Install
+# Install (hard reset)
 # ---------------------------------------------------------
 rm -rf "$DEST"
 mkdir -p "$(dirname "$DEST")"
 mv "$TMP/repo/dotfiles" "$DEST"
+
+# Ensure no git metadata survives
 rm -rf "$DEST/.git"
 
 # ---------------------------------------------------------
@@ -141,10 +232,7 @@ if [[ -d "$HOME_ROOT" && ! -d "$HOME_ROOT/$USERNAME" ]]; then
 fi
 
 # ---------------------------------------------------------
-# Patch flake.nix (LET bindings)
-# - username, monitor, nvidiaAlternative, zoom
-# - git-name, git-email
-# - luna-path (boolean)
+# Patch flake.nix (LET bindings + optional extra flakes)
 # ---------------------------------------------------------
 FLAKE="$DEST/flake.nix"
 if [[ -f "$FLAKE" ]]; then
@@ -220,6 +308,50 @@ if [[ -f "$FLAKE" ]]; then
           s/(\bmonitor\s*=\s*"[^"]*"\s*;\s*)/$1\n          git-email = "$e";\n/s;
         }
       }
+    ' "$FLAKE"
+  fi
+
+  # ---------------------------------------------------------
+  # OPTIONAL: add arbitrary extra flakes (ONLY if provided)
+  # - Adds inputs.<name>.url
+  # - Adds <name> into outputs args
+  # - Optionally adds <name>.<moduleAttrPath> into modules list
+  # ---------------------------------------------------------
+  if [[ ${#ADD_FLAKES[@]} -gt 0 ]]; then
+    # Pass the list as one string with newlines to perl
+    EXTRA_LIST="$(printf "%s\n" "${ADD_FLAKES[@]}")"
+    EXTRA_LIST="$EXTRA_LIST" perl -0777 -i -pe '
+      my $list = $ENV{EXTRA_LIST} // "";
+      my @entries = grep { length($_) } split(/\n/, $list);
+
+      my $t = $_;
+
+      for my $e (@entries) {
+        my ($name,$url,$module) = split(/\|/, $e, 3);
+        next unless $name && $url;
+
+        # 1) inputs.<name>.url
+        if ($t !~ /^\s*\Q$name\E\.url\s*=/m) {
+          my $ins = "    $name.url = \"$url\";\n";
+          # insert before the closing "};" of inputs attrset (the one before outputs =)
+          $t =~ s/(\n\s*\};\s*\n\s*\n\s*outputs\s*=)/\n$ins$1/s;
+        }
+
+        # 2) outputs args include <name>
+        if ($t !~ /outputs\s*=\s*\{[^}]*\b\Q$name\E\b/s) {
+          $t =~ s/(outputs\s*=\s*\{[^}]*?)(,\s*\.\.\.\s*\}\@inputs:)/$1, $name$2/s;
+        }
+
+        # 3) optional module include in modules = [ ... ];
+        if (defined($module) && length($module)) {
+          my $line = "$name.$module";
+          if ($t !~ /^\s*\Q$line\E\s*$/m) {
+            $t =~ s/(\n\s*\]\s*;)/\n\n            $line$1/s;
+          }
+        }
+      }
+
+      $_ = $t;
     ' "$FLAKE"
   fi
 fi
