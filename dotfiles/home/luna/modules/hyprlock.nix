@@ -9,46 +9,37 @@
         hide_cursor = true;
       };
 
-      background = {
-        monitor = "";
-        path = ""; # leer = letzter Wallpaper
-        blur_passes = 3;
-        blur_size = 8;
-      };
+      background = [
+        {
+          monitor = "";
+          path = "screenshot";
+          blur_passes = 3;
+          blur_size = 8;
+        }
+      ];
 
       input-field = {
         monitor = "";
-        size = "300, 60";
-        position = "0, -80";
+        size = "320, 64";
+        position = "0, -40";
         halign = "center";
         valign = "center";
 
-        rounding = 8;
+        rounding = 12;
 
-        border_size = 1;
-        border_color = "rgba(255,255,255,1.0)";
+        inner_color = "rgba(00000066)";
+        outer_color = "rgba(ffffffff)";
+        outline_thickness = 1;
 
-        outline_thickness = 0;
-
-        font_color = "rgba(255,255,255,1.0)";
-        inner_color = "rgba(0,0,0,0.4)";
-        outer_color = "rgba(0,0,0,0.0)";
-
-        placeholder_text = "<i>Password…</i>";
+        font_color = "rgba(ffffffff)";
+        placeholder_text = "Enter password...";
         dots_center = true;
-        dots_spacing = 0.3;
-        dots_rounding = -1;
+        dots_spacing = 0.30;
+
+        # 👇 DAS ist der Fix: Feld bleibt sichtbar, auch wenn leer
+        fade_on_empty = false;
       };
 
-      label = {
-        monitor = "";
-        text = "Enter Password";
-        font_size = 18;
-        color = "rgba(255,255,255,0.8)";
-        position = "0, -150";
-        halign = "center";
-        valign = "center";
-      };
     };
   };
 }
