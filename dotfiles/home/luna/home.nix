@@ -14,12 +14,12 @@
 
   # Alternativ: Module direkt einbinden
   imports = [
-    ./modules/hyprland.nix
+    # ./modules/hyprland.nix
     ./modules/gpg.nix
     ./modules/git.nix
     ./modules/yazi.nix
     ./modules/cursor.nix
-    #     ./modules/hyprpaper.nix
+    ./modules/hyprpaper.nix
     ./modules/hyprland/default.nix
     ./modules/theme.nix
     ./modules/wofi.nix
