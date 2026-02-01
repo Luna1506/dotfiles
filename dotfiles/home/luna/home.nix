@@ -26,7 +26,7 @@
     ./modules/ghostty.nix
     ./modules/neovim.nix
     ./modules/waybar.nix
-    ./modules/ohmyposh.nix
+    ./modules/starship.nix
   ];
 }
 
