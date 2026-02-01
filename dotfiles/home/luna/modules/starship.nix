@@ -31,7 +31,7 @@
 
       git_branch = {
         style = "bold white";
-        format = " [$branch]($style) ";
+        format = ": [$branch]($style) ";
       };
 
       character = {
@@ -40,5 +40,12 @@
       };
     };
   };
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      eval "$(starship init bash)"
+    '';
+  };
+
 }
 
