@@ -14,7 +14,8 @@
 
   # Alternativ: Module direkt einbinden
   imports = [
-    ./modules/hyprland/default.nix
+    ./modules/desktops/hyprland/default.nix
+    ./modules/desktops/niri/niri.nix
     ./modules/gpg.nix
     ./modules/git.nix
     ./modules/yazi.nix
@@ -27,6 +28,7 @@
     ./modules/neovim.nix
     ./modules/waybar.nix
     ./modules/starship.nix
+    ./modules/nwg-dock.nix
   ];
 }
 

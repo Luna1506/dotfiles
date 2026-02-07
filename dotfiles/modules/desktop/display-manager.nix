@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 {
-  # X11 aktivieren, wenn SDDM im X11-Modus läuft
+  # X11 aktivieren, wenn SDDM im X11-Modus lÃ¤uft
   services.xserver.enable = true;
 
   services.displayManager = {

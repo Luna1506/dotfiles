@@ -19,13 +19,5 @@
     # Electron/Chromium Apps auf Wayland
     NIXOS_OZONE_WL = "1";
   };
-
-  # Optional, aber oft hilfreich (Portals für Screensharing/Themes etc.)
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-hyprland
-    ];
-  };
 }
 
