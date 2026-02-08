@@ -33,6 +33,8 @@
       layerrule = [
         "blur on, match:namespace ^(.*)$"
         "ignore_alpha 0.3, match:namespace ^(.*)$"
+        "blur on, match:namespace waybar"
+        "ignore_alpha 0.3, match:namespace waybar"
       ];
 
       animations = {

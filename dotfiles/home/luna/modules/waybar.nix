@@ -97,9 +97,6 @@
 
             /* Acrylic blur */
             -gtk-icon-effect: none;
-            backdrop-filter: blur(14px);
-            -gtk-backdrop-filter: blur(14px);
-
             /* A bit of “acrylic edge” */
             border: 1px solid rgba(255, 255, 255, 0.10);
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
