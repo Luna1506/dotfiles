@@ -11,6 +11,10 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    flutter-dev = {
+      url = "path:home/luna/nixos/dotfiles/flakes/flake.nix";
+      inputs.nixpkgs.follows = "nixpkgs"; # optional, aber sinnvoll
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {

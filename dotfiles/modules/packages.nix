@@ -17,7 +17,7 @@
     wl-clipboard # puts screenshots in clipboard
     polkit # for authentification
     sl
-    jetbrains.idea
+    jetbrains-toolbox
     catppuccin-sddm # sddm theme
     lazydocker # terminal based gui for docker
     pavucontrol # application for sound controls
