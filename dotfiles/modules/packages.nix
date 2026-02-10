@@ -37,6 +37,27 @@
     nwg-dock-hyprland
     jq
     procps
+    unzip
+    temurin-bin-25
   ];
+
+  programs.nix-ld.enable = true;
+
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    zlib
+    openssl
+    glib
+    xorg.libX11
+    xorg.libXcursor
+    xorg.libXrandr
+    xorg.libXi
+    libGL
+  ];
+
+  programs.java = {
+    enable = true;
+    package = pkgs.temurin-bin-25;
+  };
 }
 
