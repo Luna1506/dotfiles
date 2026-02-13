@@ -39,6 +39,8 @@
     procps
     unzip
     temurin-bin-25
+    bruno
+    teamspeak6
   ];
 
   programs.nix-ld.enable = true;
