@@ -8,7 +8,7 @@
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk
       xdg-desktop-portal-hyprland
-      xdg-desktop-portal-kde
+      kdePackages.xdg-desktop-portal-kde
     ];
 
     # WICHTIG: KEIN xdg.portal.config hier!
@@ -33,7 +33,7 @@
       pkgs.xdg-desktop-portal
       pkgs.xdg-desktop-portal-gtk
       pkgs.xdg-desktop-portal-hyprland
-      pkgs.xdg-desktop-portal-kde
+      pkgs.kdePackages.xdg-desktop-portal-kde
     ];
 
     XDG_DESKTOP_PORTAL_DIR = "/run/current-system/sw/share/xdg-desktop-portal/portals";

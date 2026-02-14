@@ -10,7 +10,7 @@ let
 in
 {
   environment.shellAliases = {
-    rebuild = "sudo nixos-rebuild switch --flake ${dotfilesPath}#nixos";
+    # rebuild alias bewusst entfernt, damit das rebuild-Script greift
     update = "cd ${dotfilesPath} && nix flake update && cd -";
 
     garbage = "sudo nix-collect-garbage";
@@ -22,6 +22,33 @@ in
   };
 
   environment.systemPackages = [
+    (pkgs.writeShellScriptBin "rebuild" ''
+      set -euo pipefail
+
+      DOTFILES_PATH="${dotfilesPath}"
+      NIXOS_DIR="$HOME/nixos"
+
+      cd "$NIXOS_DIR"
+
+      git add .
+
+      # Wenn Argument(e) da sind und nicht leer -> nutze sie, sonst Datum/Uhrzeit
+      if [ $# -gt 0 ] && [ -n "$*" ]; then
+        MESSAGE="$*"
+      else
+        MESSAGE="$(date '+%Y-%m-%d %H:%M:%S')"
+      fi
+
+      # Nur committen wenn staged changes existieren
+      if ! git diff --cached --quiet; then
+        git commit -m "$MESSAGE"
+      else
+        echo "Keine Änderungen zum Committen."
+      fi
+
+      sudo nixos-rebuild switch --flake "$DOTFILES_PATH#nixos"
+    '')
+
     (pkgs.writeShellScriptBin "install" ''
       set -euo pipefail
 
@@ -39,7 +66,6 @@ in
       fi
 
       for pkg in "$@"; do
-        # Prüfen ob bereits im AUTO Block
         if awk '
           $0 ~ /# BEGIN AUTO PACKAGES/ {inblock=1; next}
           $0 ~ /# END AUTO PACKAGES/   {inblock=0}
@@ -50,7 +76,6 @@ in
         fi
 
         tmp="$(mktemp)"
-
         awk -v pkg="$pkg" '
           /# END AUTO PACKAGES/ {
             print "    " pkg
@@ -59,8 +84,8 @@ in
           }
           { print }
         ' "$PACKAGES_FILE" > "$tmp"
-
         mv "$tmp" "$PACKAGES_FILE"
+
         echo "Hinzugefügt: $pkg"
       done
 
@@ -85,7 +110,6 @@ in
 
       for pkg in "$@"; do
         tmp="$(mktemp)"
-
         awk -v pkg="$pkg" '
           $0 ~ /# BEGIN AUTO PACKAGES/ {inblock=1; print; next}
           $0 ~ /# END AUTO PACKAGES/   {inblock=0; print; next}
@@ -98,8 +122,8 @@ in
 
           { print }
         ' "$PACKAGES_FILE" > "$tmp"
-
         mv "$tmp" "$PACKAGES_FILE"
+
         echo "Entfernt (falls vorhanden): $pkg"
       done
 
