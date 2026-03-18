@@ -4,7 +4,7 @@
   # Ordner anlegen
   home.activation.createHyprWallpapersDir =
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      mkdir -p "${config.home.homeDirectory}/.config/hypr/wallpapers"
+      mkdir -p "${config.home.homeDirectory}/.config/hypr/wallpaper"
     '';
 
   services.hyprpaper = {

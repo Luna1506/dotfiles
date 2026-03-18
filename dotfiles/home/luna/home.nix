@@ -33,6 +33,7 @@
     enable = true;
     keybind = "SUPER SHIFT, P";
     autostart = true;
+    dock.enable = false;
     extraPackages = with pkgs; [ networkmanager bluez upower playerctl ];
   };
 
