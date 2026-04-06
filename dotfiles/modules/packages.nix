@@ -64,6 +64,7 @@
     asciiquarium
     nodejs
     claude-code
+    vscodium
     # END AUTO PACKAGES
   ];
 
