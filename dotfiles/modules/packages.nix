@@ -65,7 +65,7 @@
     nodejs
     claude-code
     vscodium
-    python
+    python3
     # END AUTO PACKAGES
   ];
 
