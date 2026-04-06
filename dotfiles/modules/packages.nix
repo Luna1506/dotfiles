@@ -65,7 +65,7 @@
     nodejs
     claude-code
     vscodium
-    conda
+    python
     # END AUTO PACKAGES
   ];
 
