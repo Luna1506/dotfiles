@@ -38,7 +38,6 @@
       fullname = "Luna Haiplick";
       nvidiaAlternative = true;
       monitor = "eDP-1";
-      zoom = "1";
       git-name = "Luna";
       git-email = "mhaiplick1506@gmail.com";
       luna-path = true;
@@ -49,7 +48,7 @@
         inherit system;
 
         specialArgs = {
-          inherit inputs username fullname nvidiaAlternative monitor zoom git-name git-email luna-path;
+          inherit inputs username fullname nvidiaAlternative monitor git-name git-email luna-path;
         };
 
         modules = [
@@ -64,7 +63,7 @@
               import ./home/${username}/home.nix;
 
             home-manager.extraSpecialArgs = {
-              inherit inputs username fullname monitor zoom git-name git-email luna-path;
+              inherit inputs username fullname monitor git-name git-email luna-path;
             };
 
             home-manager.backupFileExtension = "backup";

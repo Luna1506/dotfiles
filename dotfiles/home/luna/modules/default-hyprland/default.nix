@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, zoom, ... }:
+{ inputs, config, pkgs, ... }:
 {
   imports = [
     ./vars.nix
