@@ -66,6 +66,7 @@
     claude-code
     vscodium
     python3
+    uv
     # END AUTO PACKAGES
   ];
 
