@@ -81,8 +81,8 @@
       nil # Nix
       nixpkgs-fmt
       pyright # Python
-      nodePackages.typescript-language-server
-      nodePackages.vscode-langservers-extracted
+      typescript-language-server
+      vscode-langservers-extracted
       jdt-language-server # Java
       rust-analyzer
       dart # Dart / Flutter
