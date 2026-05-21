@@ -2,10 +2,10 @@
 
 {
   programs.neovim = {
-    enable        = true;
+    enable = true;
     defaultEditor = true;
-    viAlias       = true;
-    vimAlias      = true;
+    viAlias = true;
+    vimAlias = true;
 
     plugins = with pkgs.vimPlugins; [
       # ── Colorscheme ──────────────────────────────────────────────────────────
@@ -28,8 +28,8 @@
 
       # ── LSP ───────────────────────────────────────────────────────────────────
       nvim-lspconfig
-      fidget-nvim          # LSP progress indicator
-      neodev-nvim          # Neovim Lua dev
+      fidget-nvim # LSP progress indicator
+      neodev-nvim # Neovim Lua dev
 
       # ── Completion ────────────────────────────────────────────────────────────
       nvim-cmp
@@ -64,9 +64,9 @@
       todo-comments-nvim
       trouble-nvim
       nvim-notify
-      dressing-nvim           # Better vim.ui.input / vim.ui.select
-      noice-nvim              # Command line + notifications overhaul
-      nui-nvim                # noice dependency
+      dressing-nvim # Better vim.ui.input / vim.ui.select
+      noice-nvim # Command line + notifications overhaul
+      nui-nvim # noice dependency
 
       # ── DAP (debugging) ───────────────────────────────────────────────────────
       nvim-dap
@@ -78,19 +78,19 @@
     extraPackages = with pkgs; [
       # LSP servers
       lua-language-server
-      nil                          # Nix
+      nil # Nix
       nixpkgs-fmt
-      pyright                      # Python
+      pyright # Python
       nodePackages.typescript-language-server
-      nodePackages.vscode-langservers-extracted  # HTML, CSS, JSON, ESLint
-      jdt-language-server          # Java
+      nodePackages.vscode-langservers-extracted
+      jdt-language-server # Java
       rust-analyzer
-      dart                         # Dart / Flutter
-      taplo                        # TOML
+      dart # Dart / Flutter
+      taplo # TOML
 
       # Formatters
       stylua
-      nodePackages.prettier
+      prettier
       black
       isort
       rustfmt
@@ -101,7 +101,7 @@
       fd
       fzf
       lazygit
-      gcc                          # treesitter needs a C compiler
+      gcc # treesitter needs a C compiler
     ];
 
     initLua = ''
