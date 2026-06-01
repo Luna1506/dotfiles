@@ -9,7 +9,7 @@
       "$mainMod, T, togglefloating"
       "$mainMod, R, exec, wofi --show drun"
       "$mainMod, P, pin"
-      "$mainMod, J, togglesplit"
+      "$mainMod, J, swapsplit"
       "$mainMod, F, fullscreen"
       "$mainMod, B, exec, ~/.config/hypr/scripts/waybar-toggle.sh"
       "$mainMod, L, exec, hyprlock"
