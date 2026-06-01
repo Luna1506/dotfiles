@@ -36,6 +36,8 @@
 
   boot.kernelParams = [
     "nvidia-drm.modeset=1"
+    "acpi_osi=Linux" # <-- ACPI sagt dem BIOS "ich bin Linux"
+    "acpi_backlight=native" # <-- optional, hilft manchmal bei HP
   ];
 
   boot.loader.systemd-boot.configurationLimit = 5;
